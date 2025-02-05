@@ -16,7 +16,8 @@ set(DATACHANNELS_SRC
 	${WASM_SRC_DIR}/description.cpp
 	${WASM_SRC_DIR}/datachannel.cpp
 	${WASM_SRC_DIR}/peerconnection.cpp
-	${WASM_SRC_DIR}/websocket.cpp)
+	${WASM_SRC_DIR}/websocket.cpp
+	${WASM_SRC_DIR}/track.cpp)
 
 add_library(datachannel-wasm STATIC ${DATACHANNELS_SRC})
 set_target_properties(datachannel-wasm PROPERTIES

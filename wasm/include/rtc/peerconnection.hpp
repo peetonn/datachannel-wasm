@@ -26,7 +26,6 @@
 #include "candidate.hpp"
 #include "common.hpp"
 #include "configuration.hpp"
-#include "datachannel.hpp"
 #include "description.hpp"
 #include "reliability.hpp"
 
@@ -35,6 +34,9 @@
 #include <variant>
 
 namespace rtc {
+
+class DataChannel;
+class Track;
 
 struct DataChannelInit {
 	Reliability reliability = {};
@@ -88,6 +90,7 @@ public:
 	void addRemoteCandidate(const Candidate &candidate);
 
 	void onDataChannel(std::function<void(shared_ptr<DataChannel>)> callback);
+	void onMediaTrack(std::function<void(shared_ptr<Track>)> callback);
 	void onLocalDescription(std::function<void(const Description &description)> callback);
 	void onLocalCandidate(std::function<void(const Candidate &candidate)> callback);
 	void onStateChange(std::function<void(State state)> callback);
@@ -97,6 +100,7 @@ public:
 
 protected:
 	void triggerDataChannel(shared_ptr<DataChannel> dataChannel);
+	void triggerMediaTrack(shared_ptr<Track> track);
 	void triggerLocalDescription(const Description &description);
 	void triggerLocalCandidate(const Candidate &candidate);
 	void triggerStateChange(State state);
@@ -105,6 +109,7 @@ protected:
 	void triggerSignalingStateChange(SignalingState state);
 
 	std::function<void(shared_ptr<DataChannel>)> mDataChannelCallback;
+	std::function<void(shared_ptr<Track>)> mMediaTrackCallback;
 	std::function<void(const Description &description)> mLocalDescriptionCallback;
 	std::function<void(const Candidate &candidate)> mLocalCandidateCallback;
 	std::function<void(State state)> mStateChangeCallback;
@@ -120,6 +125,7 @@ private:
 	SignalingState mSignalingState = SignalingState::Stable;
 
 	static void DataChannelCallback(int dc, void *ptr);
+	static void MediaTrackCallback(int vt, void *ptr);
 	static void DescriptionCallback(const char *sdp, const char *type, void *ptr);
 	static void CandidateCallback(const char *candidate, const char *mid, void *ptr);
 	static void StateChangeCallback(int state, void *ptr);

@@ -22,6 +22,9 @@
 
 #include "peerconnection.hpp"
 
+#include "datachannel.hpp"
+#include "track.hpp"
+
 #include <emscripten/emscripten.h>
 
 #include <exception>
@@ -39,6 +42,7 @@ extern char *rtcGetRemoteDescriptionType(int pc);
 extern int rtcCreateDataChannel(int pc, const char *label, bool unordered, int maxRetransmits,
                                 int maxPacketLifeTime);
 extern void rtcSetDataChannelCallback(int pc, void (*dataChannelCallback)(int, void *));
+extern void rtcSetMediaTrackCallback(int pc, void (*mediaTrackCallback)(int, void *));
 extern void rtcSetLocalDescriptionCallback(int pc,
                                            void (*descriptionCallback)(const char *, const char *,
                                                                        void *));
@@ -64,6 +68,13 @@ void PeerConnection::DataChannelCallback(int dc, void *ptr) {
 	PeerConnection *p = static_cast<PeerConnection *>(ptr);
 	if (p)
 		p->triggerDataChannel(std::make_shared<DataChannel>(dc));
+}
+
+void PeerConnection::MediaTrackCallback(int vt, void *ptr) {
+	PeerConnection *p = static_cast<PeerConnection *>(ptr);
+
+	if (p)
+		p->triggerMediaTrack(std::make_shared<Track>(vt));
 }
 
 void PeerConnection::DescriptionCallback(const char *sdp, const char *type, void *ptr) {
@@ -146,6 +157,7 @@ PeerConnection::PeerConnection(const Configuration &config) {
 
 	rtcSetUserPointer(mId, this);
 	rtcSetDataChannelCallback(mId, DataChannelCallback);
+	rtcSetMediaTrackCallback(mId, MediaTrackCallback);
 	rtcSetLocalDescriptionCallback(mId, DescriptionCallback);
 	rtcSetLocalCandidateCallback(mId, CandidateCallback);
 	rtcSetStateChangeCallback(mId, StateChangeCallback);
@@ -218,6 +230,10 @@ void PeerConnection::onDataChannel(function<void(shared_ptr<DataChannel>)> callb
 	mDataChannelCallback = callback;
 }
 
+void PeerConnection::onMediaTrack(function<void(shared_ptr<Track>)> callback) {
+	mMediaTrackCallback = callback;
+}
+
 void PeerConnection::onLocalDescription(function<void(const Description &)> callback) {
 	mLocalDescriptionCallback = callback;
 }
@@ -245,6 +261,11 @@ void PeerConnection::onSignalingStateChange(function<void(SignalingState state)>
 void PeerConnection::triggerDataChannel(shared_ptr<DataChannel> dataChannel) {
 	if (mDataChannelCallback)
 		mDataChannelCallback(dataChannel);
+}
+
+void PeerConnection::triggerMediaTrack(shared_ptr<Track> track) {
+	if (mMediaTrackCallback)
+		mMediaTrackCallback(track);
 }
 
 void PeerConnection::triggerLocalDescription(const Description &description) {
