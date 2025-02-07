@@ -15,11 +15,12 @@ extern void rtcSetUserPointer(int i, void *ptr);
 extern void rtcSetMediaTrackEndedCallback(int mt, void (*callback)(void *));
 extern void rtcSetMuteCallback(int mt, void (*callback)(void *));
 extern void rtcSetUnmuteCallback(int mt, void (*callback)(void *));
-extern int rtcGetMediaTrackId(int dc, char *buffer, int size);
-extern int rtcGetMediaTrackLabel(int dc, char *buffer, int size);
-extern int rtcGetMediaTrackKind(int dc, char *buffer, int size);
-extern int rtcGetMediaTrackReadyState(int dc, char *buffer, int size);
-extern int rtcGetMediaTrackIsMuted(int dc);
+extern int rtcGetMediaTrackId(int mt, char *buffer, int size);
+extern int rtcGetMediaTrackLabel(int mt, char *buffer, int size);
+extern int rtcGetMediaTrackKind(int mt, char *buffer, int size);
+extern int rtcGetMediaTrackReadyState(int mt, char *buffer, int size);
+extern int rtcGetMediaTrackIsMuted(int mt);
+extern __externref_t rtcGetMediaTrackHandle(int mt);
 }
 
 namespace rtc {
@@ -45,11 +46,11 @@ Track::~Track() { stop(); }
 
 void Track::stop() { rtcStopMediaTrack(mId); }
 
-std::string Track::id() const { return mRtcId; }
+const std::string &Track::id() const { return mRtcId; }
 
-std::string Track::label() const { return mLabel; }
+const std::string &Track::label() const { return mLabel; }
 
-std::string Track::kind() const { return mKind; }
+const std::string &Track::kind() const { return mKind; }
 
 std::string Track::readyState() const {
 	if (!mId)
@@ -60,7 +61,15 @@ std::string Track::readyState() const {
 	return buffer;
 }
 
+__externref_t Track::getJsHandle() const { return rtcGetMediaTrackHandle(mId); }
+
 bool Track::muted() const { return rtcGetMediaTrackIsMuted(mId); }
+
+void Track::onEnded(std::function<void()> callback) { mEndedCallback = callback; }
+
+void Track::onMute(std::function<void()> callback) { mMuteCallback = callback; }
+
+void Track::onUnmute(std::function<void()> callback) { mUnmuteCallback = callback; }
 
 void Track::triggerEnded() {
 	if (mEndedCallback)

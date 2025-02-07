@@ -44,6 +44,8 @@ public:
 	string label() const;
 	Reliability reliability() const;
 
+	__externref_t getJsHandle() const;
+
 	void setBufferedAmountLowThreshold(size_t amount) override;
 
 private:

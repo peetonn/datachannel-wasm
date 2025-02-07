@@ -381,6 +381,12 @@ var WebRTC = {
     }
   },
 
+  rtcGetDataChannelHandle : function(dc) {
+    if (!dc)
+      return null;
+    return WEBRTC.dataChannelsMap[dc];
+  },
+
   rtcSetDataChannelCallback : function(pc, dataChannelCallback) {
     if (!pc)
       return;
@@ -650,6 +656,12 @@ var WebRTC = {
     var readyState = mediaTrack.readyState;
     stringToUTF8(readyState, pBuffer, size);
     return lengthBytesUTF8(readyState);
+  },
+
+  rtcGetMediaTrackHandle : function(mt) {
+    if (!mt)
+      return null;
+    return WEBRTC.mediaTracksMap[mt];
   },
 
   rtcGetMediaTrackIsMuted : function(mt) {

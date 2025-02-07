@@ -25,11 +25,13 @@ public:
 	void onMute(std::function<void()> callback);
 	void onUnmute(std::function<void()> callback);
 
-	string id() const;
-	string kind() const;
-	string label() const;
+	const string &id() const;
+	const string &kind() const;
+	const string &label() const;
 	bool muted() const;
 	string readyState() const;
+
+	__externref_t getJsHandle() const;
 
 protected:
 	int mId;

@@ -42,6 +42,7 @@ extern int rtcGetBufferedAmount(int dc);
 extern void rtcSetBufferedAmountLowThreshold(int dc, int threshold);
 extern int rtcSendMessage(int dc, const char *buffer, int size);
 extern void rtcSetUserPointer(int i, void *ptr);
+extern __externref_t rtcGetDataChannelHandle(int dc);
 }
 
 namespace rtc {
@@ -162,6 +163,8 @@ Reliability DataChannel::reliability() const {
 
 	return reliability;
 }
+
+__externref_t DataChannel::getJsHandle() const { return rtcGetDataChannelHandle(mId); }
 
 void DataChannel::setBufferedAmountLowThreshold(size_t amount) {
 	if (!mId)
