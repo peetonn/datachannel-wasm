@@ -353,6 +353,42 @@ var WebRTC = {
     peerConnection.addIceCandidate(iceCandidate).catch(function(err) { console.error(err); });
   },
 
+  rtcSetStatsCollection : function(pc, collectStats, intervalMs) {
+    if (!pc)
+      return;
+    var peerConnection = WEBRTC.peerConnectionsMap[pc];
+    if (collectStats) {
+      peerConnection.collectStats = true;
+
+      var intervalId = setInterval(function() {
+        if (peerConnection.rtcUserDeleted || !peerConnection.collectStats) {
+          clearInterval(intervalId);
+          return;
+        }
+        peerConnection.getStats().then(function(stats) {
+          if (peerConnection.rtcUserDeleted || !peerConnection.collectStats) {
+            clearInterval(intervalId);
+            return;
+          }
+
+          peerConnection.lastStats = stats;
+        });
+      }, intervalMs);
+    } else {
+      peerConnection.collectStats = false;
+    }
+  },
+
+  rtcGetLastStatReports : function(pc) {
+    if (!pc)
+      return null;
+    var peerConnection = WEBRTC.peerConnectionsMap[pc];
+    if (!peerConnection.lastStats)
+      return null;
+
+    return peerConnection.lastStats;
+  },
+
   // Data Channel API
   rtcCreateDataChannel : function(pc, pLabel, unordered, maxRetransmits, maxPacketLifeTime) {
     if (!pc)

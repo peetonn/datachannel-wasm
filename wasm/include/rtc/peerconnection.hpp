@@ -89,6 +89,10 @@ public:
 	void setRemoteDescription(const Description &description);
 	void addRemoteCandidate(const Candidate &candidate);
 
+	void startStatsCollection(int intervalMs);
+	void stopStatsCollection();
+	__externref_t getLastStatReports();
+
 	void onDataChannel(std::function<void(shared_ptr<DataChannel>)> callback);
 	void onMediaTrack(std::function<void(shared_ptr<Track>)> callback);
 	void onLocalDescription(std::function<void(const Description &description)> callback);

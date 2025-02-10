@@ -57,6 +57,8 @@ extern void rtcSetSignalingStateChangeCallback(int pc,
 extern void rtcSetRemoteDescription(int pc, const char *sdp, const char *type);
 extern void rtcAddRemoteCandidate(int pc, const char *candidate, const char *mid);
 extern void rtcSetUserPointer(int i, void *ptr);
+extern void rtcSetStatsCollection(int pc, bool collect);
+extern __externref_t rtcGetLastStatReports(int pc);
 }
 
 namespace rtc {
@@ -225,6 +227,12 @@ void PeerConnection::setRemoteDescription(const Description &description) {
 void PeerConnection::addRemoteCandidate(const Candidate &candidate) {
 	rtcAddRemoteCandidate(mId, candidate.candidate().c_str(), candidate.mid().c_str());
 }
+
+void PeerConnection::startStatsCollection(int intervalMs) { rtcSetStatsCollection(mId, true); }
+
+void PeerConnection::stopStatsCollection() { rtcSetStatsCollection(mId, false); }
+
+__externref_t PeerConnection::getLastStatReports() { return rtcGetLastStatReports(mId); }
 
 void PeerConnection::onDataChannel(function<void(shared_ptr<DataChannel>)> callback) {
 	mDataChannelCallback = callback;
