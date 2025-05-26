@@ -41,7 +41,7 @@ public:
 	bool isOpen() const override;
 	bool isClosed() const override;
 	size_t bufferedAmount() const override;
-	string label() const;
+	const string &label() const;
 	Reliability reliability() const;
 
 	__externref_t getJsHandle() const;

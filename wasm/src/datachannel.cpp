@@ -142,7 +142,7 @@ size_t DataChannel::bufferedAmount() const {
 	return size_t(ret);
 }
 
-std::string DataChannel::label() const { return mLabel; }
+const std::string &DataChannel::label() const { return mLabel; }
 
 Reliability DataChannel::reliability() const {
 	Reliability reliability = {};
